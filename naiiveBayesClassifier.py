@@ -1,5 +1,7 @@
 import numpy as np
 
+
+# *** read from file
 def readFromFile(fileName):
 	array = []
 	with open(fileName, "r") as ins:
@@ -7,6 +9,7 @@ def readFromFile(fileName):
 			array.append(line)
 	return array
 
+# *** calculate prior only
 def prior_calculation(emails):
 	no_of_spam=0
 	no_of_ham=0 # not spam
@@ -20,9 +23,31 @@ def prior_calculation(emails):
 	total = no_of_ham + no_of_spam
 	return no_of_spam/total , no_of_ham/total
 
+# *** create the table: (3 functions)
+def sort_table(list):
+	list = sorted(list,key=lambda l:l[0], reverse=False)
+	return list
+
+def binary_search(L, target):
+    start = 0
+    end = len(L) - 1
+
+    while start <= end:
+        middle = int((start + end)/ 2)
+        midpoint = L[middle]
+        if midpoint > target:
+            end = middle - 1
+        elif midpoint < target:
+            start = middle + 1
+        else:
+            return middle , midpoint
+
+
+
+
 # the table will be :
 # vocabulary	class_type	no_of_repetation
-def data_table(emails)
+def data_table(emails):
 	word_no=0
 	no_of_spam=0
 	no_of_ham=0 # not spam
