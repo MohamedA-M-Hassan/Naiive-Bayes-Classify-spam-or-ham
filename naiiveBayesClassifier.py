@@ -7,12 +7,12 @@ def readFromFile(fileName):
 			array.append(line)
 	return array
 
-def prior_calculation(string_stream):
+def prior_calculation(emails):
 	no_of_spam=0
 	no_of_ham=0 # not spam
 
-	for row in string_stream:
-		for word in row.split():
+	for email in emails:
+		for word in email.split():
 			if word == "spam":
 				no_of_spam = no_of_spam+1
 			elif word == "ham":
@@ -20,6 +20,30 @@ def prior_calculation(string_stream):
 	total = no_of_ham + no_of_spam
 	return no_of_spam/total , no_of_ham/total
 
+# the table will be :
+# vocabulary	class_type	no_of_repetation
+def data_table(emails)
+	word_no=0
+	no_of_spam=0
+	no_of_ham=0 # not spam
+	spam_flag = True
+	table=[]
+	row = []
+	for email in emails:
+		for word in email.split():
+			if word[0] == "/":
+				continue
+			elif word == "spam":
+				spam_flag = True
+				no_of_spam = no_of_spam+1
+			elif word == "ham":
+				spam_flag = False
+				no_of_ham = no_of_ham+1
+			elif spam_flag:
+				table.append([word,'spam', 0 ])
+			elif spam_flag==False:
+				table.append([word,'ham', 0 ])
+	return table
 
 
 
