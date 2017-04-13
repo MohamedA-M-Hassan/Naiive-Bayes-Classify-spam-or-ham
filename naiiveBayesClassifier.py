@@ -98,7 +98,7 @@ def data_table_and_prior(emails):
 				ham_table[the_word_to_use_next_iteration] += word
 				next_input_is_vocabulary= True            	
 	total = no_of_ham + no_of_spam
-	return spam_table ,ham_table, no_of_spam , no_of_ham , total , all_words
+	return spam_table ,ham_table, no_of_spam , no_of_ham , total
 
 
 # *** to make classification
@@ -140,7 +140,16 @@ def prob_feature_given_class (all_words_in_mail,words_in_class_1,words_in_class_
 			prob_feature_give_class_2 *= words_in_class_2[word]/len(words_in_class_2)
 	return prob_feature_give_class_1 , prob_feature_give_class_2 
 	
+#############
+# main
+############
 
+#*** training 
 emails =readFromFile("train_data") 
-spam_table ,ham_table, no_of_spam , no_of_ham , total , all_words = data_table_and_prior (emails)
+spam_table ,ham_table, no_of_spam , no_of_ham , total  = data_table_and_prior (emails)
 #print ("all " ,len(all_words), " ham: ", len(ham_table), "spam", len(spam_table))
+spam_prior = no_of_spam/total
+ham_prior = no_of_ham/total
+
+#*** classification: test_data
+emails = readFromFile("test_data")
