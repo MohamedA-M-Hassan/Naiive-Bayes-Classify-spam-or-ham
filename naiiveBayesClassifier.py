@@ -42,7 +42,7 @@ def binary_search(L, target,class_type=None):
 				start = middle + 1
 			elif middle ==target:
 				return traget_is_found, middle , midpoint
-			else 
+			else:
 				traget_is_found = False
 				return traget_is_found, -1 , 'not found' 
 		else:
@@ -56,7 +56,8 @@ def data_table(emails):
 	no_of_spam=0
 	no_of_ham=0 # not spam
 	spam_flag = True
-	table={} 
+	spam_table={}
+	ham_table={} 
 	next_input_is_vocabulary = True # if False: then it is not vacabulary but no_of_repetation
 	for email in emails:
 		for word in email.split():
@@ -69,13 +70,10 @@ def data_table(emails):
 				spam_flag = False
 				no_of_ham = no_of_ham+1
 			elif spam_flag and next_input_is_vocabulary:
-				#ret , index , value = binary_search(first_col_table,word)
-				if np.array([word,'spam']):
-					# don't do any thing
-				elif np.array([word,'spam'])==False:
-					table[np.array([word,'spam'])]= 0
+				if not(word in spam_table):
+					spam_table[word]= 0 	# append to dictionary
 				next_input_is_vocabulary = False # next element not vacabulary
-				the_word_to_use_next_iteration = np.array([word,'spam'])
+				the_word_to_use_next_iteration = word
 				'''
 				iterate 3la el vocabulary in table
 				lw msh mogod yb2a 23ml append
@@ -83,12 +81,10 @@ def data_table(emails):
 				w b3d kda 2rf3 el flag 2n el next iteration hna5od number
 				'''
 			elif spam_flag==False and next_input_is_vocabulary==True:
-				if np.array([word,'ham']):
-					# don't do any thing
-				elif np.array([word,'ham'])==False:
-					table[np.array([word,'ham'])]= 0
+				if not(word in ham_table):
+					ham_table[word]= 0		# append to dictionary
 				next_input_is_vocabulary = False # next element not vacabulary
-				the_word_to_use_next_iteration = np.array([word,'spam'])
+				the_word_to_use_next_iteration = word
 			elif spam_flag==True and next_input_is_vocabulary== False:
 				word = int(word)
 				table[the_word_to_use_next_iteration] += word
@@ -97,11 +93,11 @@ def data_table(emails):
 				word=int(word)
 				table[the_word_to_use_next_iteration] += word
 				next_input_is_vocabulary= True            	
-	return table
+	return table , no_of_spam , no_of_ham 
 
 
 
 
 myList =readFromFile("train_data") 
-spam , ham,= prior_calculation(myList)
+spam , ham= prior_calculation(myList)
 print ("spam: " ,spam, " ham: ", ham)   
