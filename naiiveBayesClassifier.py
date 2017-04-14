@@ -156,7 +156,11 @@ for email in emails:
 	mail_type,all_words = all_words_in_mail(email)
 	prob_words_given_spam = prob_feature_given_class(all_words,spam_table)
 	prob_words_given_ham = prob_feature_given_class(all_words,ham_table) 
-	if (prob_words_given_ham >= prob_words_given_spam):
+	# print("pr spam: ", prob_words_given_spam)
+	# print("pr spam: ", prob_words_given_ham)
+	prob_spam_given_words = spam_prior * prob_words_given_spam
+	prob_ham_given_words = ham_prior * prob_words_given_ham
+	if (prob_ham_given_words >= prob_spam_given_words):
 		if mail_type=='ham':
 			no_of_correct_classification_mail += 1
 	else:
