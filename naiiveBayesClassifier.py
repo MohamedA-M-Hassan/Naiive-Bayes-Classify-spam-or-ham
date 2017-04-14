@@ -115,30 +115,26 @@ def all_words_in_mail(mail):
 		if word[0]== '/':
 			continue
 		elif word == 'spam' or word=='ham':
-			all_words |= {word}
+			mail_type = word
 		elif next_input_is_vocabulary:
 			all_words |= {word}
 			next_input_is_vocabulary =False
 		elif next_input_is_vocabulary==False:
 			next_input_is_vocabulary =True
-	return all_words
+	return mail_type,all_words
 
 
-def prob_feature_given_class (all_words_in_mail,words_in_class_1,words_in_class_2):
-	prob_feature_give_class_1 = 1 # initialy
-	prob_feature_give_class_2 = 1 # initialy
+
+def prob_feature_given_class (all_words_in_mail,words_in_class):
+	# all_words_in_mail is set , words_in_class is dictionary
+	prob_feature_give_class = 1 # initialy
 	for word in all_words_in_mail:
-		# for class 1
-		if (word in words_in_class_1)==False:
-			prob_feature_give_class_1=0
-		elif (word in words_in_class_1) and (not(prob_feature_give_class_1==0)):
-			prob_feature_give_class_1 *= words_in_class_1[word]/len(words_in_class_1)
-		# for class 2
-		if (word in words_in_class_2)==False:
-			prob_feature_give_class_2=0
-		elif (word in words_in_class_2) and (not(prob_feature_give_class_2==0)):
-			prob_feature_give_class_2 *= words_in_class_2[word]/len(words_in_class_2)
-	return prob_feature_give_class_1 , prob_feature_give_class_2 
+		if (word in words_in_class)==False:
+			prob_feature_give_class=0
+			break
+		elif word in words_in_class:
+			prob_feature_give_class *= words_in_class[word]/len(words_in_class)
+	return prob_feature_give_class 
 	
 #############
 # main
@@ -147,9 +143,27 @@ def prob_feature_given_class (all_words_in_mail,words_in_class_1,words_in_class_
 #*** training 
 emails =readFromFile("train_data") 
 spam_table ,ham_table, no_of_spam , no_of_ham , total  = data_table_and_prior (emails)
-#print ("all " ,len(all_words), " ham: ", len(ham_table), "spam", len(spam_table))
+#print ( " ham: ", len(ham_table), "spam", len(spam_table))
 spam_prior = no_of_spam/total
 ham_prior = no_of_ham/total
 
 #*** classification: test_data
 emails = readFromFile("test_data")
+no_of_emails = len(emails)
+no_of_correct_classification_mail = 0
+for email in emails:
+	# get mail_type just to check if your classification is good or not
+	mail_type,all_words = all_words_in_mail(email)
+	prob_words_given_spam = prob_feature_given_class(all_words,spam_table)
+	prob_words_given_ham = prob_feature_given_class(all_words,ham_table) 
+	if (prob_words_given_ham >= prob_words_given_spam):
+		if mail_type=='ham':
+			no_of_correct_classification_mail += 1
+	else:
+		if mail_type=='spam':
+			no_of_correct_classification_mail += 1
+
+print("no of correct: ", no_of_correct_classification_mail)
+print("total mails: ", no_of_emails)
+print("accuracy : ", no_of_correct_classification_mail/no_of_emails)
+	 
