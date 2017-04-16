@@ -1,4 +1,5 @@
 import numpy as np
+import operator
 
 
 # *** read from file
@@ -129,21 +130,36 @@ def all_words_in_mail(mail):
 def prob_feature_given_class (all_words_in_mail,words_in_class,no_of_class):
 	# all_words_in_mail is set , words_in_class is dictionary
 	prob_feature_give_class = 1 # initialy
+	sum_ = sum(words_in_class.values())
 	for word in all_words_in_mail:
 		if (word in words_in_class)==False:
 			prob_feature_give_class=0
 			break
 		elif word in words_in_class:
 			#prob_feature_give_class *= words_in_class[word]/len(words_in_class)
-			prob_feature_give_class *= words_in_class[word]/no_of_class
+			#prob_feature_give_class *= words_in_class[word]/no_of_class
+			prob_feature_give_class *= words_in_class[word]/sum_
 
 	# Laplace smoothed
 	if prob_feature_give_class == 0:
-		#prob_feature_give_class = 1 / ( len(all_words_in_mail) )#+ len(words_in_class) )
-		prob_feature_give_class = 1 / ( len(all_words_in_mail) + len(words_in_class) )
+		#prob_feature_give_class = 1 / ( len(all_words_in_mail) + sum_ )
+		prob_feature_give_class *= 1/(len(words_in_class)+sum_)
 	return prob_feature_give_class
 
-	
+def max_5_words_value(calss_table):
+	total_no_of_repetition = sum(calss_table.values())
+	temp= sorted(calss_table.items(), key=operator.itemgetter(1), reverse=True)
+	i=0
+	for r in temp:
+		print("word_",i," is : ", r[0] )
+		print("		it's no_of_repetition : ", r[1])
+		print("		it's probability : ", r[1]/total_no_of_repetition)
+		
+		i +=1
+		if i==5:
+			break 
+	pass
+
 #############
 # main
 ############
@@ -154,9 +170,30 @@ spam_table ,ham_table, no_of_spam , no_of_ham , total  = data_table_and_prior(em
 #print ( " ham: ", len(ham_table), "spam", len(spam_table))
 spam_prior = no_of_spam/total
 ham_prior = no_of_ham/total
-print("no_of_spam: ",no_of_spam," len(spam_table) : ", len(spam_table))
+#print("no_of_spam: ",no_of_spam," len(spam_table) : ", len(spam_table))
+
+
+print("--- question_1: priors?? ---")
+print("spam_prior = ", spam_prior)
+print("ham_prior  = ",ham_prior)
+print("		")
+print("		")
+print("--- question_2: 5 most likeley words  ?? ---")
+print("		")
+#*** most 5 max value
+print("5 most likily in ** spam ** ")
+max_5_words_value(spam_table)
+print(" ")
+print("5 most likily in ** not spam ** ")
+max_5_words_value(ham_table)
+
+
+
+
+
 
 #*** classification: test_data
+
 emails = readFromFile("test_data")
 no_of_emails = len(emails)
 no_of_correct_classification_mail = 0
@@ -176,7 +213,10 @@ for email in emails:
 		if mail_type=='spam':
 			no_of_correct_classification_mail += 1
 
+print("--- question_3: classification part and calculate accuracy  ?? ---")
+print(" ")
 print("no of correct: ", no_of_correct_classification_mail)
-print("total mails: ", no_of_emails)
+print("total mails to test: ", no_of_emails)
 print("accuracy : ", no_of_correct_classification_mail/no_of_emails)
-	 
+print(" ")
+print("If I were a spammer,I would like to use the 5 most likely words in *not spam* many times in my spam emails")	 
