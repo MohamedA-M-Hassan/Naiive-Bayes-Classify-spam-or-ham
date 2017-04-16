@@ -136,14 +136,14 @@ def prob_feature_given_class (all_words_in_mail,words_in_class,no_of_class):
 			prob_feature_give_class=0
 			break
 		elif word in words_in_class:
-			#prob_feature_give_class *= words_in_class[word]/len(words_in_class)
+			prob_feature_give_class *= words_in_class[word]/len(words_in_class)
 			#prob_feature_give_class *= words_in_class[word]/no_of_class
-			prob_feature_give_class *= words_in_class[word]/sum_
+			#prob_feature_give_class *= words_in_class[word]/sum_
 
 	# Laplace smoothed
 	if prob_feature_give_class == 0:
-		#prob_feature_give_class = 1 / ( len(all_words_in_mail) + sum_ )
-		prob_feature_give_class *= 1/(len(words_in_class)+sum_)
+		prob_feature_give_class = 1 / ( len(all_words_in_mail) + sum_ )
+		#prob_feature_give_class *= 1/(len(words_in_class)+sum_)
 	return prob_feature_give_class
 
 def max_5_words_value(calss_table):
