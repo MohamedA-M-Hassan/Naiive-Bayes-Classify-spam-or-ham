@@ -49,9 +49,8 @@ def binary_search(L, target,class_type=None):
 			while start <=end:
 				middle = int((start + end)/ 2)
 
-# 2 tables : spam_table, ham_table
+# 2 tables : spam_table, ham_table (dictionary)
 # all words will be in a set
-
 def data_table_and_prior(emails):
 	word_no=0
 	no_of_spam=0
@@ -68,9 +67,11 @@ def data_table_and_prior(emails):
 			elif word == "spam":
 				spam_flag = True
 				no_of_spam = no_of_spam+1
+				next_input_is_vocabulary = True
 			elif word == "ham":
 				spam_flag = False
 				no_of_ham = no_of_ham+1
+				next_input_is_vocabulary =True
 			elif spam_flag and next_input_is_vocabulary:
 				if not(word in spam_table):
 					spam_table[word]= 0 	# append to dictionary
@@ -125,7 +126,7 @@ def all_words_in_mail(mail):
 
 
 
-def prob_feature_given_class (all_words_in_mail,words_in_class):
+def prob_feature_given_class (all_words_in_mail,words_in_class,no_of_class):
 	# all_words_in_mail is set , words_in_class is dictionary
 	prob_feature_give_class = 1 # initialy
 	for word in all_words_in_mail:
@@ -133,8 +134,15 @@ def prob_feature_given_class (all_words_in_mail,words_in_class):
 			prob_feature_give_class=0
 			break
 		elif word in words_in_class:
-			prob_feature_give_class *= words_in_class[word]/len(words_in_class)
-	return prob_feature_give_class 
+			#prob_feature_give_class *= words_in_class[word]/len(words_in_class)
+			prob_feature_give_class *= words_in_class[word]/no_of_class
+
+	# Laplace smoothed
+	if prob_feature_give_class == 0:
+		#prob_feature_give_class = 1 / ( len(all_words_in_mail) )#+ len(words_in_class) )
+		prob_feature_give_class = 1 / ( len(all_words_in_mail) + len(words_in_class) )
+	return prob_feature_give_class
+
 	
 #############
 # main
@@ -142,10 +150,11 @@ def prob_feature_given_class (all_words_in_mail,words_in_class):
 
 #*** training 
 emails =readFromFile("train_data") 
-spam_table ,ham_table, no_of_spam , no_of_ham , total  = data_table_and_prior (emails)
+spam_table ,ham_table, no_of_spam , no_of_ham , total  = data_table_and_prior(emails)
 #print ( " ham: ", len(ham_table), "spam", len(spam_table))
 spam_prior = no_of_spam/total
 ham_prior = no_of_ham/total
+print("no_of_spam: ",no_of_spam," len(spam_table) : ", len(spam_table))
 
 #*** classification: test_data
 emails = readFromFile("test_data")
@@ -153,9 +162,9 @@ no_of_emails = len(emails)
 no_of_correct_classification_mail = 0
 for email in emails:
 	# get mail_type just to check if your classification is good or not
-	mail_type,all_words = all_words_in_mail(email)
-	prob_words_given_spam = prob_feature_given_class(all_words,spam_table)
-	prob_words_given_ham = prob_feature_given_class(all_words,ham_table) 
+	mail_type,all_words = all_words_in_mail(email) # set
+	prob_words_given_spam = prob_feature_given_class(all_words,spam_table,no_of_spam)
+	prob_words_given_ham = prob_feature_given_class(all_words,ham_table,no_of_ham) 
 	# print("pr spam: ", prob_words_given_spam)
 	# print("pr spam: ", prob_words_given_ham)
 	prob_spam_given_words = spam_prior * prob_words_given_spam
